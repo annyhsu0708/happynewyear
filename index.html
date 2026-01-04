@@ -6,20 +6,21 @@
     <title>新年翻牌驚喜</title>
     <style>
         :root {
-            /* 電腦版尺寸 */
             --card-width: 280px;
             --card-height: 400px;
             --transition-speed: 0.8s;
         }
 
-        /* --- 手機版自適應調整 --- */
         @media (max-width: 600px) {
             :root {
                 --card-width: 160px;
                 --card-height: 230px;
             }
-            #instruction { font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 20px !important; }
-            #greeting { font-size: 1.2rem !important; letter-spacing: 3px !important; }
+            #instruction { font-size: 0.8rem; letter-spacing: 2px; }
+            #analysis-container { top: calc(35% + (var(--card-height) * 1.1 / 2) + 15px) !important; }
+            .analysis-title { font-size: 1.1rem !important; }
+            .analysis-text { font-size: 0.85rem !important; }
+            #greeting { font-size: 1.1rem !important; bottom: 5% !important; }
         }
 
         body {
@@ -31,12 +32,12 @@
             min-height: 100vh;
             margin: 0;
             overflow: hidden;
-            font-family: 'PingFang TC', 'Heiti TC', sans-serif;
+            font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
             color: white;
         }
 
         #instruction {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             font-weight: 200;
             letter-spacing: 4px;
             color: rgba(255,255,255,0.6);
@@ -48,14 +49,12 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            transition: all var(--transition-speed) ease;
         }
 
         @media (min-width: 768px) {
-            .grid { grid-template-columns: repeat(4, 1fr); gap: 30px; }
+            .grid { grid-template-columns: repeat(4, 1fr); gap: 40px; }
         }
 
-        /* --- 卡片基礎與懸停 --- */
         .card {
             width: var(--card-width);
             height: var(--card-height);
@@ -64,10 +63,7 @@
             position: relative;
         }
 
-        .card:hover:not(.is-active) {
-            transform: scale(1.05);
-            z-index: 10;
-        }
+        .card:hover:not(.is-active) { transform: scale(1.05); z-index: 10; }
 
         .card-inner {
             position: relative;
@@ -79,23 +75,18 @@
 
         .card.is-flipped .card-inner { transform: rotateY(180deg); }
 
-        .card.is-hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.8);
-        }
+        .card.is-hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
 
         .card.is-active {
             position: fixed;
             z-index: 999;
-            transform: scale(1.2); 
+            transform: scale(1.1) !important; 
             left: 50%;
-            top: 40%; 
+            top: 35%; 
             margin-left: calc(var(--card-width) / -2);
             margin-top: calc(var(--card-height) / -2);
         }
 
-        /* --- 卡片外觀與光澤 --- */
         .card-face {
             position: absolute;
             width: 100%;
@@ -110,83 +101,85 @@
         .card-face::after {
             content: "";
             position: absolute;
-            top: -110%;
-            left: -110%;
-            width: 300%;
-            height: 300%;
-            background: linear-gradient(
-                45deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0) 45%,
-                rgba(255, 255, 255, 0.25) 50%,
-                rgba(255, 255, 255, 0) 55%,
-                rgba(255, 255, 255, 0) 100%
-            );
+            top: -110%; left: -110%; width: 300%; height: 300%;
+            background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.25) 50%, transparent 55%);
             transform: rotate(45deg);
             transition: transform 0.6s ease-out;
             pointer-events: none;
         }
 
-        .card:hover:not(.is-active) .card-face::after {
-            transform: rotate(45deg) translate(50%, 50%);
-        }
+        .card:hover:not(.is-active) .card-face::after { transform: rotate(45deg) translate(50%, 50%); }
 
         .card-front { transform: rotateY(180deg); background: #fff; }
         img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* --- 新年快樂文字 --- */
-        #greeting {
+        #analysis-container {
             position: fixed;
-            top: calc(40% + (var(--card-height) * 1.2 / 2) + 20px);
-            width: 100vw;
+            top: calc(35% + (var(--card-height) * 1.1 / 2) + 30px);
+            width: 85%;
+            max-width: 500px;
             text-align: center;
-            left: 0;
-            font-size: 1.8rem;
-            font-weight: 300;
-            letter-spacing: 6px;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.3);
             opacity: 0;
-            transform: translateY(15px);
-            transition: all 1s ease 0.7s;
+            transform: translateY(20px);
+            transition: all 1s ease 0.8s;
             pointer-events: none;
-            white-space: nowrap;
-        }
-
-        #greeting.show { opacity: 1; transform: translateY(0); }
-
-        .btn-reset {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 8px 18px;
-            background: transparent;
-            color: rgba(255,255,255,0.4);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            letter-spacing: 1px;
-            transition: all 0.3s;
             z-index: 1000;
         }
 
-        .btn-reset:hover { color: white; border-color: white; background: rgba(255,255,255,0.1); }
+        #analysis-container.show { opacity: 1; transform: translateY(0); }
+
+        .analysis-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 12px; color: #ffffff; }
+        .analysis-text { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.9); text-align: justify; }
+
+        #greeting {
+            position: fixed;
+            bottom: 8%;
+            font-size: 1.5rem;
+            font-weight: 200;
+            letter-spacing: 8px;
+            color: rgba(255,255,255,0.4);
+            opacity: 0;
+            transition: opacity 1s ease 1.5s;
+            z-index: 1000;
+        }
+
+        #greeting.show { opacity: 1; }
+
+        .btn-reset {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            background: transparent;
+            color: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            z-index: 1001;
+        }
     </style>
 </head>
 <body>
 
-    <div id="instruction">SELECT A CARD FOR THE NEW YEAR</div>
-
+    <div id="instruction">SELECT A CARD TO START YOUR YEAR</div>
     <div class="grid" id="cardGrid"></div>
 
-    <div id="greeting">HAPPY NEW YEAR</div>
+    <div id="analysis-container">
+        <div class="analysis-title" id="cardTitle"></div>
+        <div class="analysis-text" id="cardDesc"></div>
+    </div>
 
-    <button class="btn-reset" onclick="location.reload()">RESET GAME</button>
+    <div id="greeting">HAPPY NEW YEAR</div>
+    <button class="btn-reset" onclick="location.reload()">RESET</button>
 
     <script>
-        const backImg = 'back.png';
-        const frontImages = ['front1.png', 'front2.png', 'front3.png', 'front4.png'];
+        const cardData = [
+            { img: 'front1.png', title: '金幣騎士：馬上暴富', desc: '金幣騎士代表踏實與穩定，如同耐力十足的良駒。過往的累積與財務規劃將得到回報，馬年祝你馬上暴富！錢包塞最滿，穩穩當個財富自由的小富翁！' },
+            { img: 'front2.png', title: '聖杯騎士：馬上幸福', desc: '聖杯騎士象徵深情與溫柔，正如駿馬帶來情感的喜訊。單身的你像聖杯騎士一樣電力滿格，轉頭就遇見讓你心跳加速的真愛，甜到掉牙！有伴的你則是在關係中收穫真摯與體貼，每天都被幸福圍繞！' },
+            { img: 'front3.png', title: '寶劍騎士：馬上贏', desc: '寶劍騎士出招快狠準，讓你不管是商場、考場還是賭場都「一馬當先」！願你腦袋轉得比馬蹄還快，新年贏錢就像是開外掛，好運馬不停蹄，勝利手到擒來！' },
+            { img: 'front4.png', title: '權杖騎士：馬上出發', desc: '權杖騎士充滿行動力與勇氣，象徵奔向未知的探索。拿出你的熱血，不管是出國還是跳槽，都要「天馬行空」地去闖。願你勇敢追夢，哪裡好玩往哪衝，每天的生活都像開盲盒一樣驚喜不斷！' }
+        ];
 
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -196,33 +189,33 @@
             return array;
         }
 
-        function createCards() {
+        window.onload = function() {
             const grid = document.getElementById('cardGrid');
-            const shuffled = shuffle([...frontImages]);
+            const shuffled = shuffle([...cardData]);
 
-            shuffled.forEach((imgSrc) => {
+            shuffled.forEach((data) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
                     <div class="card-inner">
-                        <div class="card-face card-back"><img src="${backImg}"></div>
-                        <div class="card-face card-front"><img src="${imgSrc}"></div>
+                        <div class="card-face"><img src="back.png"></div>
+                        <div class="card-face card-front"><img src="${data.img}"></div>
                     </div>
                 `;
                 
                 card.onclick = function() {
                     if (document.querySelector('.is-active')) return;
+                    document.getElementById('cardTitle').innerText = data.title;
+                    document.getElementById('cardDesc').innerText = data.desc;
                     this.classList.add('is-flipped', 'is-active');
-                    document.querySelectorAll('.card').forEach(c => {
-                        if (c !== this) c.classList.add('is-hidden');
-                    });
+                    document.querySelectorAll('.card').forEach(c => { if (c !== this) c.classList.add('is-hidden'); });
                     document.getElementById('instruction').style.opacity = '0';
+                    document.getElementById('analysis-container').classList.add('show');
                     document.getElementById('greeting').classList.add('show');
                 };
                 grid.appendChild(card);
             });
-        }
-        createCards();
+        };
     </script>
 </body>
 </html>
