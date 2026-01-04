@@ -3,81 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>領取2026新年好運</title>
+    <title>新年翻牌驚喜</title>
     <style>
         :root {
+            /* 電腦版基礎尺寸 */
             --card-width: 280px;
             --card-height: 400px;
             --transition-speed: 0.8s;
         }
 
-        /* 手機版自適應優化 */
+        /* 手機版自適應尺寸 */
         @media (max-width: 600px) {
             :root {
-                --card-width: 165px;
-                --card-height: 235px;
+                --card-width: 160px;
+                --card-height: 230px;
             }
-            #greeting { font-size: 1.4rem !important; margin-top: 20px !important; letter-spacing: 5px !important; }
-            #instruction { font-size: 0.85rem; }
-            
-            /* 翻開後的卡片寬度：在手機上幾乎滿版 */
-            .card.is-active {
-                transform: scale(2.0) !important;
-                margin-top: 100px !important;
-                margin-bottom: 120px !important; /* 為放大的卡片留空間 */
-            }
-            #analysis-container { margin-top: 20px !important; width: 88% !important; }
         }
 
         body {
             background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
-            margin: 0;
-            padding: 0;
-            /* 允許網頁滾動 */
-            overflow-y: auto;
-            overflow-x: hidden;
-            font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'PingFang TC', 'Heiti TC', sans-serif;
+            color: white;
         }
 
-        /* 1. HAPPY NEW YEAR 放在最上方 */
-        #greeting {
-            margin-top: 40px;
-            font-size: 2rem;
+        #instruction {
+            margin-bottom: 30px;
             font-weight: 200;
-            letter-spacing: 12px;
-            color: #fff;
+            letter-spacing: 4px;
+            color: rgba(255,255,255,0.6);
+            transition: opacity 0.5s ease;
             text-align: center;
-            opacity: 0.3; /* 預設淡出，翻開後變亮 */
-            transition: all 1s ease;
-            text-shadow: 0 0 5px #fff;
         }
 
-        #greeting.show {
-            opacity: 1;
-            text-shadow: 0 0 10px #fff, 0 0 20px #fff;
-            animation: blink 2s infinite alternate;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            transition: all var(--transition-speed) ease;
         }
 
-        @keyframes blink {
-            0%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
-            50% { text-shadow: 0 0 10px #fff, 0 0 30px #fff; }
+        @media (min-width: 768px) {
+            .grid { grid-template-columns: repeat(4, 1fr); gap: 30px; }
         }
 
-        #instruction { margin: 20px 0; font-weight: 200; letter-spacing: 4px; color: rgba(255,255,255,0.6); }
-
-        /* 2. 卡片網格排在下面 */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 20px; 
-            padding-bottom: 50px;
-        }
-        @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 40px; } }
-
+        /* --- 卡片基礎 --- */
         .card {
             width: var(--card-width);
             height: var(--card-height);
@@ -85,142 +61,145 @@
             transition: opacity 0.5s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
         }
-        .card:hover:not(.is-active) { transform: scale(1.05); z-index: 10; }
-        
+
+        .card:hover:not(.is-active) {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
         .card-inner {
             position: relative;
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
             transform-style: preserve-3d;
             transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .card.is-flipped .card-inner { transform: rotateY(180deg); }
-        
-        .card.is-hidden { display: none; } /* 隱藏其他卡片 */
 
-        /* 3. 選中後的卡片排列 */
+        .card.is-flipped .card-inner { transform: rotateY(180deg); }
+
+        .card.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        /* 修正：翻開後置中邏輯 */
         .card.is-active {
-            transform: scale(1.1);
-            margin: 40px 0;
-            cursor: default;
+            position: fixed;
+            z-index: 999;
+            left: 50%;
+            top: 45%;
+            transform: translate(-50%, -50%) scale(1.2); /* 使用 translate 置中，不受 margin 影響 */
+            margin: 0; /* 清除可能影響的 margin */
         }
 
         .card-face {
-            position: absolute; width: 100%; height: 100%;
-            backface-visibility: hidden; border-radius: 15px;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
             border: 0.5px solid rgba(255, 255, 255, 0.4);
             box-shadow: 0 10px 40px rgba(0,0,0,0.8);
             overflow: hidden;
-            background: #222;
         }
 
+        /* 光澤效果 */
         .card-face::after {
-            content: ""; position: absolute; top: -110%; left: -110%; width: 300%; height: 300%;
+            content: "";
+            position: absolute;
+            top: -110%; left: -110%; width: 300%; height: 300%;
             background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.25) 50%, transparent 55%);
-            transform: rotate(45deg); transition: transform 0.6s ease-out;
+            transform: rotate(45deg);
+            transition: transform 0.6s ease-out;
+            pointer-events: none;
         }
+
         .card:hover:not(.is-active) .card-face::after { transform: rotate(45deg) translate(50%, 50%); }
 
         .card-front { transform: rotateY(180deg); background: #fff; }
         img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* 4. 解析區塊排在最下面 */
-        #analysis-container {
-            width: 90%;
-            max-width: 500px;
-            text-align: left;
+        /* --- 文字修正：相對於畫面中央定位 --- */
+        #greeting {
+            position: fixed;
+            left: 50%;
+            top: calc(45% + (var(--card-height) * 1.2 / 2) + 20px);
+            transform: translateX(-50%); /* 確保文字本身也水平置中 */
+            width: 100%;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 6px;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
             opacity: 0;
-            display: none; /* 初始不佔位 */
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 60px;
-        }
-        #analysis-container.show { 
-            display: flex; 
-            opacity: 1; 
-            animation: fadeInUp 1s ease forwards;
+            transition: all 1s ease 0.7s;
+            pointer-events: none;
+            white-space: nowrap;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @media (max-width: 600px) {
+            #greeting { font-size: 1.3rem; letter-spacing: 3px; }
         }
 
-        .analysis-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; text-align: center; }
-        .analysis-text { font-size: 1rem; line-height: 1.7; color: rgba(255,255,255,0.9); margin-bottom: 30px; }
+        #greeting.show { opacity: 1; }
 
         .btn-reset {
-            padding: 12px 40px; background: rgba(255, 255, 255, 0.1); color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 50px;
-            cursor: pointer; font-size: 1rem; letter-spacing: 2px;
-            transition: all 0.3s;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            background: transparent;
+            color: rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            z-index: 1000;
         }
-        .btn-reset:hover { background: white; color: black; }
     </style>
 </head>
 <body>
 
-    <div id="greeting">HAPPY NEW YEAR</div>
-    <div id="instruction">SELECT A CARD TO START YOUR YEAR</div>
-    
+    <div id="instruction">SELECT A CARD FOR THE NEW YEAR</div>
     <div class="grid" id="cardGrid"></div>
-
-    <div id="analysis-container">
-        <div class="analysis-title" id="cardTitle"></div>
-        <div class="analysis-text" id="cardDesc"></div>
-        <button class="btn-reset" onclick="location.reload()">再抽一次</button>
-    </div>
+    <div id="greeting">HAPPY NEW YEAR</div>
+    <button class="btn-reset" onclick="location.reload()">RESET GAME</button>
 
     <script>
-        (function() {
-            const cardData = [
-                { id: 'front1', title: '金幣騎士：馬上暴富', desc: '金幣騎士代表踏實與穩定，如同耐力十足的良駒。過往的累積與財務規劃將得到回報，馬年祝你馬上暴富！錢包塞最滿，穩穩當個財富自由的小富翁！' },
-                { id: 'front2', title: '聖杯騎士：馬上幸福', desc: '聖杯騎士象徵深情與溫柔，正如駿馬帶來情感的喜訊。單身的你像聖杯騎士一樣電力滿格，轉頭就遇見讓你心跳加速的真愛，甜到掉牙！有伴的你則是在關係中收穫真摯與體貼，每天都被幸福圍繞！' },
-                { id: 'front3', title: '寶劍騎士：馬上贏', desc: '寶劍騎士出招快狠準，讓你不管是商場、考場還是賭場都「一馬當先」！願你腦袋轉得比馬蹄還快，新年贏錢就像是開外掛，好運馬不停蹄，勝利手到擒來！' },
-                { id: 'front4', title: '權杖騎士：馬上出發', desc: '權杖騎士充滿行動力與勇氣，象徵奔向未知的探索。拿出你的熱血，不管是出國還是跳槽，都要「天馬行空」地去闖。願你勇敢追夢，哪裡好玩往哪衝，每天的生活都像開盲盒一樣驚喜不斷！' }
-            ];
+        const backImg = 'back.png';
+        const frontImages = ['front1.png', 'front2.png', 'front3.png', 'front4.png'];
 
-            function shuffle(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
+            return array;
+        }
 
-            function init() {
-                const grid = document.getElementById('cardGrid');
-                if (!grid) return;
-                const shuffled = shuffle([...cardData]);
-                shuffled.forEach((data) => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `<div class="card-inner">
-                        <div class="card-face"><img src="back.png" onerror="this.parentElement.innerText='CARD'"></div>
-                        <div class="card-face card-front"><img src="${data.id}.png" onerror="this.parentElement.innerText='FRONT'"></div>
-                    </div>`;
-                    
-                    card.onclick = function() {
-                        if (document.querySelector('.is-active')) return;
-                        
-                        document.getElementById('cardTitle').innerText = data.title;
-                        document.getElementById('cardDesc').innerText = data.desc;
-                        
-                        this.classList.add('is-flipped', 'is-active');
-                        // 隱藏其他卡片
-                        document.querySelectorAll('.card').forEach(c => { if (c !== this) c.classList.add('is-hidden'); });
-                        
-                        document.getElementById('instruction').style.display = 'none';
-                        document.getElementById('greeting').classList.add('show');
-                        document.getElementById('analysis-container').classList.add('show');
-                        
-                        // 點擊後滾動到上方，方便看解析
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    };
-                    grid.appendChild(card);
-                });
-            }
-            if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
-        })();
+        function createCards() {
+            const grid = document.getElementById('cardGrid');
+            const shuffled = shuffle([...frontImages]);
+            shuffled.forEach((imgSrc) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<div class="card-inner">
+                    <div class="card-face card-back"><img src="${backImg}"></div>
+                    <div class="card-face card-front"><img src="${imgSrc}"></div>
+                </div>`;
+                card.onclick = function() {
+                    if (document.querySelector('.is-active')) return;
+                    this.classList.add('is-flipped', 'is-active');
+                    document.querySelectorAll('.card').forEach(c => { if (c !== this) c.classList.add('is-hidden'); });
+                    document.getElementById('instruction').style.opacity = '0';
+                    document.getElementById('greeting').classList.add('show');
+                };
+                grid.appendChild(card);
+            });
+        }
+        createCards();
     </script>
 </body>
 </html>
