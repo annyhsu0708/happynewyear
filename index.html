@@ -11,26 +11,21 @@
             --transition-speed: 0.8s;
         }
 
-        /* 手機版響應式微調 */
         @media (max-width: 600px) {
             :root {
                 --card-width: 165px;
                 --card-height: 235px;
             }
             #greeting { font-size: 1.6rem !important; letter-spacing: 5px !important; margin-top: 40px !important; }
-            
-            /* 修正：手機版標題不分行並置中 */
             #instruction { 
                 font-size: 0.75rem !important; 
                 white-space: nowrap !important; 
-                width: 100vw;
                 margin: 40px 0 20px 0 !important;
             }
-            
-            /* 手機版翻開後的卡片大小與間距 */
+            /* 手機版翻開後的縮放與間距 */
             .card.is-active {
                 transform: scale(2.1) !important;
-                margin: 120px auto 100px auto !important; /* 增加上下間距確保不壓字 */
+                margin: 120px 0 100px 0 !important;
             }
         }
 
@@ -40,16 +35,14 @@
             padding: 0;
             min-height: 100vh;
             overflow-x: hidden;
-            /* 預設開啟滾動，讓體驗更自然 */
             overflow-y: auto; 
             font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
             color: white;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: center; /* 水平對齊核心 */
         }
 
-        /* 1. HAPPY NEW YEAR：置頂且初始隱藏 */
         #greeting {
             margin-top: 60px;
             width: 100%;
@@ -61,27 +54,28 @@
             opacity: 0;
             visibility: hidden;
             transition: all 1s ease;
-            flex-shrink: 0;
         }
         #greeting.show { opacity: 1; visibility: visible; text-shadow: 0 0 10px #fff; margin-bottom: 20px; }
 
-        #instruction { 
-            margin: 80px 0 40px 0; 
-            font-weight: 200; 
-            letter-spacing: 4px; 
-            color: rgba(255,255,255,0.6); 
-            text-align: center;
-        }
+        #instruction { margin: 80px 0 40px 0; font-weight: 200; letter-spacing: 4px; color: rgba(255,255,255,0.6); }
 
-        /* 2. 網格系統 */
+        /* --- 修正：網格容器對齊 --- */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
             gap: 20px; 
             padding-bottom: 50px;
-            width: fit-content;
+            justify-items: center; /* 讓子元素在單元格內置中 */
         }
         @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 40px; } }
+
+        /* 當點擊後，網格改為單欄並強制置中 */
+        .grid.single-mode {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
 
         .card {
             width: var(--card-width);
@@ -101,12 +95,11 @@
         .card.is-flipped .card-inner { transform: rotateY(180deg); }
         .card.is-hidden { display: none; }
 
-        /* 3. 翻開後的卡片：置中且隨頁面滾動 */
+        /* 翻開後的卡片：完美置中 */
         .card.is-active {
             transform: scale(1.1);
-            margin: 40px auto; /* 水平自動置中，上下留白 */
+            margin: 40px 0; 
             cursor: default;
-            z-index: 100;
         }
 
         .card-face {
@@ -128,7 +121,6 @@
         .card-front { transform: rotateY(180deg); background: #fff; }
         img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* 4. 解析區塊 */
         #analysis-container {
             width: 85%;
             max-width: 550px;
@@ -137,7 +129,6 @@
             flex-direction: column;
             align-items: center; 
             padding-bottom: 100px;
-            margin-top: 20px;
         }
 
         #analysis-container.show { display: flex; animation: fadeInUp 1s ease forwards; }
@@ -207,13 +198,16 @@
                         document.getElementById('cardDesc').innerText = data.desc;
                         
                         this.classList.add('is-flipped', 'is-active');
+                        
+                        // 關鍵修正：將網格切換為單欄對齊模式
+                        grid.classList.add('single-mode');
+
                         document.querySelectorAll('.card').forEach(c => { if (c !== this) c.classList.add('is-hidden'); });
                         
                         document.getElementById('instruction').style.display = 'none';
                         document.getElementById('greeting').classList.add('show');
                         document.getElementById('analysis-container').classList.add('show');
                         
-                        // 滾動到頂部
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     };
                     grid.appendChild(card);
