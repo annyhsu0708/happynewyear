@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>領取2026新年好運</title>
+    <title>新年好運翻牌</title>
     <style>
         :root {
             --card-width: 280px;
@@ -19,10 +19,10 @@
             #greeting { font-size: 1.6rem !important; letter-spacing: 5px !important; margin-top: 40px !important; }
             #instruction { font-size: 0.85rem; margin-top: 40px !important; }
             
-            /* 手機版：卡牌放大並留出上下間距 */
+            /* 手機版：卡牌放大並確保置中 */
             .card.is-active {
                 transform: scale(2.1) !important;
-                margin: 140px 0 100px 0 !important; /* 增加與上方標題和下方文字的間距 */
+                margin: 140px auto 100px auto !important; /* 使用 auto 確保水平置中 */
             }
         }
 
@@ -31,14 +31,13 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            /* 預設隱藏超出部分，點擊後由 JS 開啟滾動 */
             overflow-x: hidden;
             overflow-y: hidden; 
             font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
             color: white;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: center; /* 讓所有內容水平置中 */
         }
 
         /* 1. HAPPY NEW YEAR */
@@ -53,14 +52,13 @@
             opacity: 0;
             visibility: hidden;
             transition: all 1s ease;
-            flex-shrink: 0;
         }
 
         #greeting.show {
             opacity: 1;
             visibility: visible;
             text-shadow: 0 0 10px #fff, 0 0 20px #fff;
-            margin-bottom: 40px; /* 與卡片的間距 */
+            margin-bottom: 40px;
         }
 
         #instruction { margin: 80px 0 30px; font-weight: 200; letter-spacing: 4px; color: rgba(255,255,255,0.6); }
@@ -92,10 +90,10 @@
         .card.is-flipped .card-inner { transform: rotateY(180deg); }
         .card.is-hidden { display: none; }
 
-        /* 選中後的卡片排版 */
+        /* 翻開後的卡片：確保水平置中 */
         .card.is-active {
             transform: scale(1.1);
-            margin-bottom: 50px;
+            margin: 40px auto 50px auto; /* 上下邊距，左右 auto 置中 */
             cursor: default;
             z-index: 100;
         }
@@ -126,9 +124,9 @@
             opacity: 0;
             display: none; 
             flex-direction: column;
-            align-items: center; /* 讓內部元素置中（用於標題與按鈕） */
+            align-items: center; 
             padding-bottom: 80px;
-            margin-top: 20px;
+            margin: 20px auto 0 auto; /* 確保容器本身也置中 */
         }
 
         #analysis-container.show { display: flex; animation: fadeInUp 1s ease forwards; }
@@ -138,7 +136,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 解析標題：始終置中 */
         .analysis-title { 
             font-size: 1.6rem; 
             font-weight: bold; 
@@ -148,7 +145,6 @@
             width: 100%;
         }
 
-        /* 解析內容：靠左對齊 */
         .analysis-text { 
             font-size: 1rem; 
             line-height: 1.8; 
@@ -158,7 +154,6 @@
             width: 100%;
         }
 
-        /* 重抽按鈕 */
         .btn-reset {
             padding: 12px 50px; 
             background: rgba(255, 255, 255, 0.1); 
@@ -227,11 +222,8 @@
                         document.getElementById('instruction').style.display = 'none';
                         document.getElementById('greeting').classList.add('show');
                         document.getElementById('analysis-container').classList.add('show');
-
-                        // 關鍵修正：點擊後開啟網頁滾動
                         document.body.style.overflowY = 'auto';
                         
-                        // 滾動到頂部開始閱讀
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     };
                     grid.appendChild(card);
