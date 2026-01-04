@@ -17,64 +17,65 @@
                 --card-width: 165px;
                 --card-height: 235px;
             }
-            #instruction { font-size: 0.85rem; letter-spacing: 2px; }
+            #greeting { font-size: 1.4rem !important; margin-top: 20px !important; letter-spacing: 5px !important; }
+            #instruction { font-size: 0.85rem; }
             
-            /* 手機版翻開後的卡片寬度：接近滿版 */
+            /* 翻開後的卡片寬度：在手機上幾乎滿版 */
             .card.is-active {
-                transform: scale(2.1) !important; /* 加大比例使其接近手機寬度 */
-                top: 30% !important;
+                transform: scale(2.0) !important;
+                margin-top: 100px !important;
+                margin-bottom: 120px !important; /* 為放大的卡片留空間 */
             }
-
-            #analysis-container { 
-                top: calc(30% + (var(--card-height) * 2.1 / 2) + 15px) !important;
-                width: 85% !important;
-            }
-            .analysis-title { font-size: 1.1rem !important; margin-bottom: 5px !important; }
-            .analysis-text { font-size: 0.85rem !important; text-align: left !important; }
-            
-            #greeting { font-size: 1.2rem !important; top: 5% !important; letter-spacing: 4px !important; }
+            #analysis-container { margin-top: 20px !important; width: 88% !important; }
         }
 
         body {
             background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            margin: 0;
+            padding: 0;
+            /* 允許網頁滾動 */
+            overflow-y: auto;
+            overflow-x: hidden;
+            font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-            color: white;
         }
 
-        /* 頂部的閃爍祝福語 */
+        /* 1. HAPPY NEW YEAR 放在最上方 */
         #greeting {
-            position: fixed;
-            top: 8%;
-            font-size: 1.8rem;
+            margin-top: 40px;
+            font-size: 2rem;
             font-weight: 200;
-            letter-spacing: 10px;
+            letter-spacing: 12px;
             color: #fff;
-            opacity: 0;
-            transition: opacity 1s ease;
-            z-index: 1000;
             text-align: center;
-            /* 霓虹微閃爍效果 */
-            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #fff;
+            opacity: 0.3; /* 預設淡出，翻開後變亮 */
+            transition: all 1s ease;
+            text-shadow: 0 0 5px #fff;
+        }
+
+        #greeting.show {
+            opacity: 1;
+            text-shadow: 0 0 10px #fff, 0 0 20px #fff;
             animation: blink 2s infinite alternate;
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 0.8; text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
-            50% { opacity: 1; text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff; }
+            0%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+            50% { text-shadow: 0 0 10px #fff, 0 0 30px #fff; }
         }
 
-        #greeting.show { opacity: 1; }
+        #instruction { margin: 20px 0; font-weight: 200; letter-spacing: 4px; color: rgba(255,255,255,0.6); }
 
-        #instruction { margin-bottom: 30px; font-weight: 200; letter-spacing: 4px; color: rgba(255,255,255,0.6); }
-
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        /* 2. 卡片網格排在下面 */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 20px; 
+            padding-bottom: 50px;
+        }
         @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 40px; } }
 
         .card {
@@ -85,6 +86,7 @@
             position: relative;
         }
         .card:hover:not(.is-active) { transform: scale(1.05); z-index: 10; }
+        
         .card-inner {
             position: relative;
             width: 100%; height: 100%;
@@ -92,13 +94,14 @@
             transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
         }
         .card.is-flipped .card-inner { transform: rotateY(180deg); }
-        .card.is-hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
+        
+        .card.is-hidden { display: none; } /* 隱藏其他卡片 */
 
+        /* 3. 選中後的卡片排列 */
         .card.is-active {
-            position: fixed; z-index: 999; left: 50%; top: 40%; 
-            margin-left: calc(var(--card-width) / -2);
-            margin-top: calc(var(--card-height) / -2);
             transform: scale(1.1);
+            margin: 40px 0;
+            cursor: default;
         }
 
         .card-face {
@@ -120,25 +123,37 @@
         .card-front { transform: rotateY(180deg); background: #fff; }
         img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* 解析區塊：靠左對齊 */
+        /* 4. 解析區塊排在最下面 */
         #analysis-container {
-            position: fixed; top: calc(40% + (var(--card-height) * 1.1 / 2) + 30px);
-            width: 90%; max-width: 500px; text-align: left; /* 整體設為靠左 */
-            opacity: 0; transform: translateY(20px); transition: all 1s ease 0.8s;
-            pointer-events: none; z-index: 1000;
-            display: flex; flex-direction: column; align-items: center; /* 讓內容在容器中置中，但文字內部靠左 */
+            width: 90%;
+            max-width: 500px;
+            text-align: left;
+            opacity: 0;
+            display: none; /* 初始不佔位 */
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 60px;
         }
-        #analysis-container.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-        .analysis-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 12px; align-self: center; text-align: center; } /* 標題維持置中 */
-        .analysis-text { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.9); margin-bottom: 25px; text-align: left; width: 100%; } /* 內文靠左 */
+        #analysis-container.show { 
+            display: flex; 
+            opacity: 1; 
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .analysis-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; text-align: center; }
+        .analysis-text { font-size: 1rem; line-height: 1.7; color: rgba(255,255,255,0.9); margin-bottom: 30px; }
 
         .btn-reset {
-            padding: 10px 35px; background: rgba(255, 255, 255, 0.1); color: white;
+            padding: 12px 40px; background: rgba(255, 255, 255, 0.1); color: white;
             border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 50px;
-            cursor: pointer; font-size: 0.9rem; letter-spacing: 2px;
-            transition: all 0.3s; display: none; margin: 0 auto;
+            cursor: pointer; font-size: 1rem; letter-spacing: 2px;
+            transition: all 0.3s;
         }
-        .btn-reset.show { display: block; }
         .btn-reset:hover { background: white; color: black; }
     </style>
 </head>
@@ -146,12 +161,13 @@
 
     <div id="greeting">HAPPY NEW YEAR</div>
     <div id="instruction">SELECT A CARD TO START YOUR YEAR</div>
+    
     <div class="grid" id="cardGrid"></div>
 
     <div id="analysis-container">
         <div class="analysis-title" id="cardTitle"></div>
         <div class="analysis-text" id="cardDesc"></div>
-        <button class="btn-reset" id="resetBtn" onclick="location.reload()">再抽一次</button>
+        <button class="btn-reset" onclick="location.reload()">再抽一次</button>
     </div>
 
     <script>
@@ -182,16 +198,23 @@
                         <div class="card-face"><img src="back.png" onerror="this.parentElement.innerText='CARD'"></div>
                         <div class="card-face card-front"><img src="${data.id}.png" onerror="this.parentElement.innerText='FRONT'"></div>
                     </div>`;
+                    
                     card.onclick = function() {
                         if (document.querySelector('.is-active')) return;
+                        
                         document.getElementById('cardTitle').innerText = data.title;
                         document.getElementById('cardDesc').innerText = data.desc;
+                        
                         this.classList.add('is-flipped', 'is-active');
+                        // 隱藏其他卡片
                         document.querySelectorAll('.card').forEach(c => { if (c !== this) c.classList.add('is-hidden'); });
-                        document.getElementById('instruction').style.opacity = '0';
-                        document.getElementById('analysis-container').classList.add('show');
-                        document.getElementById('resetBtn').classList.add('show');
+                        
+                        document.getElementById('instruction').style.display = 'none';
                         document.getElementById('greeting').classList.add('show');
+                        document.getElementById('analysis-container').classList.add('show');
+                        
+                        // 點擊後滾動到上方，方便看解析
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     };
                     grid.appendChild(card);
                 });
